@@ -1,0 +1,284 @@
+﻿node.exe : 
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (:String  
+  ) [], RemoteException
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+./src/app/admin/page.tsx
+16:5  Error: 'Calendar' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+79:98  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/no-
+explicit-any
+241:71  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/no-
+explicit-any
+315:101  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+315:115  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./src/app/blog/page.tsx
+78:24  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/no-
+explicit-any
+197:56  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/no-
+explicit-any
+205:46  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/no-
+explicit-any
+
+./src/app/blog/[slug]/BlogCli
+ent.tsx
+5:10  Error: 'Calendar' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+5:20  Error: 'User' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+14:13  Error: 'slug' is 
+assigned a value but never 
+used.  @typescript-eslint/no-
+unused-vars
+64:156  Error: `'` can be 
+escaped with `&apos;`, 
+`&lsquo;`, `&#39;`, 
+`&rsquo;`.  
+react/no-unescaped-entities
+69:39  Error: `'` can be 
+escaped with `&apos;`, 
+`&lsquo;`, `&#39;`, 
+`&rsquo;`.  
+react/no-unescaped-entities
+83:46  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+83:54  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+156:68  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/no-
+explicit-any
+164:58  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/no-
+explicit-any
+
+./src/app/contact/page.tsx
+58:27  Error: `'` can be 
+escaped with `&apos;`, 
+`&lsquo;`, `&#39;`, 
+`&rsquo;`.  
+react/no-unescaped-entities
+80:91  Error: `'` can be 
+escaped with `&apos;`, 
+`&lsquo;`, `&#39;`, 
+`&rsquo;`.  
+react/no-unescaped-entities
+
+./src/app/services/blog-maint
+enance/page.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/app/services/bulk-email
+/page.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/app/services/bulk-sms/p
+age.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/app/services/bulk-voice
+-calls/page.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/app/services/content-cr
+eation/page.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/app/services/facebook-i
+nstagram-ads/page.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/app/services/google-ads
+/page.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/app/services/influencer
+-marketing/page.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/app/services/lead-gener
+ation/page.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/app/services/linkedin-a
+ds/page.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/app/services/page.tsx
+7:58  Error: 'MessageSquare' 
+is defined but never used.  @
+typescript-eslint/no-unused-v
+ars
+
+./src/app/services/seo-sem/pa
+ge.tsx
+4:25  Error: 'TrendingUp' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+4:64  Error: 'Rocket' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+53:30  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/no-
+explicit-any
+54:29  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/no-
+explicit-any
+55:26  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/no-
+explicit-any
+
+./src/app/services/twitter-ad
+s/page.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/app/services/web-app-de
+velopment/page.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/app/services/web-banner
+s/page.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/app/services/youtube-ad
+s/page.tsx
+4:48  Error: 'Globe' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/components/Logo.tsx
+1:8  Error: 'Image' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/components/Navbar.tsx
+6:32  Error: 'Rocket' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+6:40  Error: 'BarChart' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+6:61  Error: 'Smartphone' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+6:100  Error: 'Mail' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+6:106  Error: 'PhoneCall' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+6:148  Error: 'Layout' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./src/components/ServicePageT
+emplate.tsx
+15:11  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/no-
+explicit-any
+16:52  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/no-
+explicit-any
+21:37  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/no-
+explicit-any
+
+./src/components/StatsCounter
+.tsx
+3:10  Error: 'motion' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+20:17  Error: 'start' is 
+never reassigned. Use 
+'const' instead.  
+prefer-const
+
+./src/components/TestimonialS
+lider.tsx
+72:33  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+72:62  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+info  - Need to disable some 
+ESLint rules? Learn more 
+here: https://nextjs.org/docs
+/basic-features/eslint#disabl
+ing-rules

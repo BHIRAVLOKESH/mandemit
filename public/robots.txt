@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://mandemit.com
+
+# Sitemaps
+Sitemap: https://mandemit.com/sitemap.xml

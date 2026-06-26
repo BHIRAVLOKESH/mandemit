@@ -8,6 +8,7 @@ import CTABanner from "@/components/CTABanner";
 import AboutSnapshot from "@/components/home/AboutSnapshot";
 import ServicesOverview from "@/components/home/ServicesOverview";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
+import CaseStudiesTeaser from "@/components/home/CaseStudiesTeaser";
 import Link from "next/link";
 
 export const metadata = {
@@ -78,11 +79,13 @@ export default function Home() {
 
       <ProcessTimeline />
 
+      <CaseStudiesTeaser />
+
       {/* Services Teaser Full List */}
       <section className="py-24 px-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-navy">Complete Suite of Services</h2>
+            <h2 className="text-4xl font-black text-navy uppercase tracking-tighter">Complete Suite of Services</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-12">

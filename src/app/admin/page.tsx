@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { db } from "@/lib/firebase";
+import { db, storage } from "@/lib/firebase";
 import { collection, getDocs, addDoc, deleteDoc, doc, query, orderBy, serverTimestamp } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
     LayoutDashboard,
     FileText,
@@ -15,7 +16,11 @@ import {
     User,
     Calendar,
     Clock,
-    Phone
+    Phone,
+    Upload,
+    X,
+    Image as ImageIcon,
+    Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
@@ -41,17 +46,41 @@ type Blog = {
     date: string;
     author: string;
     readTime: string;
+    image?: string;
+    content?: string;
+};
+
+type CaseStudy = {
+    id?: string;
+    slug: string;
+    title: string;
+    about: string;
+    content: string;
+    image: string;
+    category: string;
+    date: string;
 };
 
 export default function AdminPortal() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [id, setId] = useState("");
     const [psd, setPsd] = useState("");
-    const [activeTab, setActiveTab] = useState<"submissions" | "blogs" | "newsletter">("submissions");
+    const [activeTab, setActiveTab] = useState<"submissions" | "blogs" | "newsletter" | "case-studies">("submissions");
 
     // Submissions state
     const [submissions, setSubmissions] = useState<Submission[]>([]);
     const [newsletterSubs, setNewsletterSubs] = useState<{ id: string, email: string, date: string }[]>([]);
+
+    // Case Studies state
+    const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
+    const [newCaseStudy, setNewCaseStudy] = useState({
+        title: "",
+        about: "",
+        content: "",
+        image: "",
+        category: "Growth"
+    });
+    const [csUploading, setCsUploading] = useState(false);
 
     // Blogs state
     const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -60,8 +89,58 @@ export default function AdminPortal() {
         excerpt: "",
         category: "General",
         author: "Admin",
-        readTime: "5 min read"
+        readTime: "5 min read",
+        image: "",
+        content: ""
     });
+
+    const [uploading, setUploading] = useState(false);
+    const [dragActive, setDragActive] = useState(false);
+
+    // Image Compression Logic from D2D Logic
+    // Image Compression Logic from D2D Logic (Optimized for immediate preview)
+    const compressImage = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            if (!file.type.startsWith("image/")) {
+                reject(new Error("File is not an image"));
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target?.result as string;
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    let width = img.width;
+                    let height = img.height;
+                    const MAX_WIDTH = 1200;
+                    const MAX_HEIGHT = 1200;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext("2d");
+                    ctx?.drawImage(img, 0, 0, width, height);
+
+                    resolve(canvas.toDataURL("image/jpeg", 0.7));
+                };
+                img.onerror = () => reject(new Error("Failed to load image"));
+            };
+            reader.onerror = () => reject(new Error("Failed to read file"));
+            reader.readAsDataURL(file);
+        });
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -77,6 +156,10 @@ export default function AdminPortal() {
                 // Fetch Newsletter
                 const newsSnapshot = await getDocs(query(collection(db, "newsletter_subscribers"), orderBy("createdAt", "desc")));
                 setNewsletterSubs(newsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any)));
+
+                // Fetch Case Studies
+                const csSnapshot = await getDocs(query(collection(db, "case_studies"), orderBy("createdAt", "desc")));
+                setCaseStudies(csSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as CaseStudy)));
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -102,29 +185,100 @@ export default function AdminPortal() {
         setPsd("");
     };
 
-    const handleAddBlog = async (e: React.FormEvent) => {
+    const handleAddBlog = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // D2D Logic: Store base64 directly in Firestore for immediate performance
+        const imageUrl = newBlog.image;
         const slug = newBlog.title.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
         const blogToAdd = {
             ...newBlog,
+            image: imageUrl,
             slug,
             date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
             createdAt: serverTimestamp()
         };
 
+        // Optimistic Update: Update UI immediately
+        setBlogs([{ id: "temp-" + Date.now(), ...blogToAdd } as Blog, ...blogs]);
+        setNewBlog({
+            title: "",
+            excerpt: "",
+            category: "General",
+            author: "Admin",
+            readTime: "5 min read",
+            image: "",
+            content: ""
+        });
+
+        // Background save
+        addDoc(collection(db, "blogs"), blogToAdd).then((docRef) => {
+            // Update the temp ID with real ID if needed, or just let the next refresh handle it
+            console.log("Blog saved to cloud:", docRef.id);
+        }).catch(err => {
+            console.error("Cloud save failed:", err);
+            alert("Warning: Blog saved locally but failed to sync to cloud.");
+        });
+    };
+
+    const handleAddCaseStudy = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // D2D Logic: Store base64 directly in Firestore for immediate performance
+        const imageUrl = newCaseStudy.image;
+        const slug = newCaseStudy.title.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
+        const csToAdd = {
+            ...newCaseStudy,
+            image: imageUrl,
+            slug,
+            date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+            createdAt: serverTimestamp()
+        };
+
+        // Optimistic Update: Update UI immediately
+        setCaseStudies([{ id: "temp-" + Date.now(), ...csToAdd } as CaseStudy, ...caseStudies]);
+        setNewCaseStudy({
+            title: "",
+            about: "",
+            content: "",
+            image: "",
+            category: "Growth"
+        });
+
+        // Background save
+        addDoc(collection(db, "case_studies"), csToAdd).then((docRef) => {
+            console.log("Case study saved to cloud:", docRef.id);
+        }).catch(err => {
+            console.error("Cloud save failed:", err);
+            alert("Warning: Case study saved locally but failed to sync to cloud.");
+        });
+    };
+
+    const handleDeleteCaseStudy = async (csId: string) => {
+        if (confirm("Are you sure you want to delete this case study?")) {
+            try {
+                await deleteDoc(doc(db, "case_studies", csId));
+                setCaseStudies(caseStudies.filter(cs => cs.id !== csId));
+            } catch (e) {
+                console.error("Error deleting case study:", e);
+            }
+        }
+    };
+
+    const handleCsFileUpload = async (file: File) => {
+        if (!file) return;
+
+        if (file.size > 10 * 1024 * 1024) {
+            alert("File is too large. Please select an image under 10MB.");
+            return;
+        }
+
         try {
-            const docRef = await addDoc(collection(db, "blogs"), blogToAdd);
-            setBlogs([{ id: docRef.id, ...blogToAdd } as Blog, ...blogs]);
-            setNewBlog({
-                title: "",
-                excerpt: "",
-                category: "General",
-                author: "Admin",
-                readTime: "5 min read"
-            });
-            alert("Blog added successfully!");
-        } catch (e) {
-            console.error("Error adding blog:", e);
+            const compressedUrl = await compressImage(file);
+            setNewCaseStudy(prev => ({ ...prev, image: compressedUrl }));
+        } catch (error) {
+            console.error("Error processing image:", error);
+            alert("Failed to process image.");
         }
     };
 
@@ -136,6 +290,42 @@ export default function AdminPortal() {
             } catch (e) {
                 console.error("Error deleting blog:", e);
             }
+        }
+    };
+
+    const handleFileUpload = async (file: File) => {
+        if (!file) return;
+
+        if (file.size > 10 * 1024 * 1024) {
+            alert("File is too large. Please select an image under 10MB.");
+            return;
+        }
+
+        try {
+            const compressedUrl = await compressImage(file);
+            setNewBlog(prev => ({ ...prev, image: compressedUrl }));
+        } catch (error) {
+            console.error("Error processing image:", error);
+            alert("Failed to process image.");
+        }
+    };
+
+    const handleDrag = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") {
+            setDragActive(true);
+        } else if (e.type === "dragleave") {
+            setDragActive(false);
+        }
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            handleFileUpload(e.dataTransfer.files[0]);
         }
     };
 
@@ -234,6 +424,7 @@ export default function AdminPortal() {
                         {[
                             { id: "submissions", label: "Form Submissions", icon: MessageSquare },
                             { id: "blogs", label: "Manage Blogs", icon: FileText },
+                            { id: "case-studies", label: "Case Studies", icon: LayoutDashboard },
                             { id: "newsletter", label: "Subscribers", icon: Send }
                         ].map((tab) => (
                             <button
@@ -399,11 +590,68 @@ export default function AdminPortal() {
                                                 />
                                             </div>
 
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-black text-navy uppercase tracking-widest ml-1">Full Content</label>
+                                                <textarea
+                                                    rows={10}
+                                                    required
+                                                    value={newBlog.content}
+                                                    onChange={(e) => setNewBlog({ ...newBlog, content: e.target.value })}
+                                                    className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-golden focus:bg-white outline-none transition-all font-bold text-navy resize-none"
+                                                    placeholder="Write your full article here (Markdown supported)..."
+                                                />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-black text-navy uppercase tracking-widest ml-1">Featured Image (Optional)</label>
+
+                                                {newBlog.image ? (
+                                                    <div className="relative w-full aspect-video rounded-2xl overflow-hidden group border-2 border-golden/20">
+                                                        <img src={newBlog.image} alt="Preview" className="w-full h-full object-cover" />
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setNewBlog({ ...newBlog, image: "" })}
+                                                            className="absolute top-4 right-4 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        >
+                                                            <X className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div
+                                                        onDragEnter={handleDrag}
+                                                        onDragLeave={handleDrag}
+                                                        onDragOver={handleDrag}
+                                                        onDrop={handleDrop}
+                                                        className={`relative w-full aspect-video rounded-3xl border-4 border-dashed transition-all flex flex-col items-center justify-center space-y-4 ${dragActive
+                                                            ? "border-golden bg-golden/5"
+                                                            : "border-gray-100 bg-gray-50 hover:bg-gray-100 hover:border-gray-200"
+                                                            }`}
+                                                    >
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])}
+                                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                        />
+
+                                                        <div className="text-center">
+                                                            <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4 text-gray-400">
+                                                                <Upload className="w-8 h-8" />
+                                                            </div>
+                                                            <p className="text-navy font-black">Drag and drop or click</p>
+                                                            <p className="text-gray-400 text-sm font-medium">PNG, JPG or WebP (max. 5MB)</p>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+
                                             <button
                                                 type="submit"
-                                                className="w-full py-5 bg-navy text-golden font-black rounded-2xl hover:bg-golden hover:text-navy transition-all duration-300 shadow-xl active:scale-95 text-lg"
+                                                disabled={!newBlog.image}
+                                                className="w-full py-5 bg-navy text-golden font-black rounded-2xl hover:bg-golden hover:text-navy transition-all duration-300 shadow-xl active:scale-95 text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3"
                                             >
-                                                Publish Article
+                                                <span>Publish Article</span>
                                             </button>
                                         </form>
                                     </div>
@@ -429,6 +677,143 @@ export default function AdminPortal() {
                                                         Delete
                                                     </button>
                                                 </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {activeTab === "case-studies" && (
+                                <motion.div
+                                    key="case-studies"
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    className="space-y-12"
+                                >
+                                    <div className="bg-white p-10 rounded-[40px] shadow-sm border border-navy/5">
+                                        <h2 className="text-2xl font-black text-navy mb-8 flex items-center space-x-3">
+                                            <div className="w-10 h-10 bg-golden rounded-xl flex items-center justify-center text-navy"><Plus className="w-6 h-6" /></div>
+                                            <span>New Case Study</span>
+                                        </h2>
+
+                                        <form onSubmit={handleAddCaseStudy} className="space-y-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="space-y-2">
+                                                    <label className="text-xs font-black text-navy uppercase tracking-widest ml-1">Project Title</label>
+                                                    <input
+                                                        type="text"
+                                                        required
+                                                        value={newCaseStudy.title}
+                                                        onChange={(e) => setNewCaseStudy({ ...newCaseStudy, title: e.target.value })}
+                                                        className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-golden focus:bg-white outline-none transition-all font-bold text-navy"
+                                                        placeholder="E-commerce Sales Boost"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-xs font-black text-navy uppercase tracking-widest ml-1">Category</label>
+                                                    <input
+                                                        type="text"
+                                                        required
+                                                        value={newCaseStudy.category}
+                                                        onChange={(e) => setNewCaseStudy({ ...newCaseStudy, category: e.target.value })}
+                                                        className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-golden focus:bg-white outline-none transition-all font-bold text-navy"
+                                                        placeholder="SEO, E-commerce, Branding..."
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-black text-navy uppercase tracking-widest ml-1">About (Short Summary)</label>
+                                                <textarea
+                                                    rows={3}
+                                                    required
+                                                    value={newCaseStudy.about}
+                                                    onChange={(e) => setNewCaseStudy({ ...newCaseStudy, about: e.target.value })}
+                                                    className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-golden focus:bg-white outline-none transition-all font-bold text-navy resize-none"
+                                                    placeholder="A brief overview of the results achieved..."
+                                                />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-black text-navy uppercase tracking-widest ml-1">Full Detailed Content</label>
+                                                <textarea
+                                                    rows={10}
+                                                    required
+                                                    value={newCaseStudy.content}
+                                                    onChange={(e) => setNewCaseStudy({ ...newCaseStudy, content: e.target.value })}
+                                                    className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-golden focus:bg-white outline-none transition-all font-bold text-navy resize-none"
+                                                    placeholder="Describe the challenge, solution, and final results in detail..."
+                                                />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-black text-navy uppercase tracking-widest ml-1">Result Image</label>
+                                                {newCaseStudy.image ? (
+                                                    <div className="relative w-full aspect-video rounded-2xl overflow-hidden group border-2 border-golden/20">
+                                                        <img src={newCaseStudy.image} alt="Preview" className="w-full h-full object-cover" />
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setNewCaseStudy({ ...newCaseStudy, image: "" })}
+                                                            className="absolute top-4 right-4 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        >
+                                                            <X className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="relative w-full h-48 rounded-3xl border-4 border-dashed border-gray-100 bg-gray-50 hover:bg-gray-100 hover:border-gray-200 transition-all flex flex-col items-center justify-center space-y-2">
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            onChange={(e) => e.target.files && handleCsFileUpload(e.target.files[0])}
+                                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                        />
+                                                        {csUploading ? (
+                                                            <Loader2 className="w-8 h-8 text-golden animate-spin" />
+                                                        ) : (
+                                                            <>
+                                                                <Upload className="w-8 h-8 text-gray-400" />
+                                                                <p className="text-navy font-black">Upload Result Image</p>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <button
+                                                type="submit"
+                                                disabled={!newCaseStudy.image}
+                                                className="w-full py-5 bg-navy text-golden font-black rounded-2xl hover:bg-golden hover:text-navy transition-all duration-300 shadow-xl active:scale-95 text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3"
+                                            >
+                                                <span>Publish Case Study</span>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    {/* Case Study List */}
+                                    <div className="grid grid-cols-1 gap-4">
+                                        {caseStudies.map((cs) => (
+                                            <div key={cs.id} className="bg-white p-6 rounded-3xl shadow-sm border border-navy/5 flex items-center justify-between group">
+                                                <div className="flex items-center space-x-6">
+                                                    {cs.image ? (
+                                                        <img src={cs.image} className="w-16 h-16 rounded-xl object-cover" alt="" />
+                                                    ) : (
+                                                        <div className="w-16 h-16 bg-gray-50 rounded-xl flex items-center justify-center text-navy-light">
+                                                            <LayoutDashboard className="w-6 h-6" />
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <h4 className="font-bold text-navy">{cs.title}</h4>
+                                                        <p className="text-xs text-gray-400 font-bold">{cs.category} • {cs.date}</p>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleDeleteCaseStudy(cs.id!)}
+                                                    className="p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all font-bold"
+                                                >
+                                                    Delete
+                                                </button>
                                             </div>
                                         ))}
                                     </div>

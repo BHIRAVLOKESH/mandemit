@@ -79,6 +79,7 @@ export default function Navbar() {
                         </div>
                     </div>
 
+                    <Link href="/case-studies" className="text-white hover:text-golden transition-colors font-medium">Case Studies</Link>
                     <Link href="/blog" className="text-white hover:text-golden transition-colors font-medium">Blog</Link>
                     <Link href="/contact" className="text-white hover:text-golden transition-colors font-medium">Contact</Link>
 
@@ -113,6 +114,7 @@ export default function Navbar() {
                             <Link href="/" onClick={() => setMobileMenuOpen(false)} className="text-white hover:text-golden">Home</Link>
                             <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="text-white hover:text-golden">About Us</Link>
                             <Link href="/services" onClick={() => setMobileMenuOpen(false)} className="text-white hover:text-golden">Services</Link>
+                            <Link href="/case-studies" onClick={() => setMobileMenuOpen(false)} className="text-white hover:text-golden">Case Studies</Link>
                             <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="text-white hover:text-golden">Blog</Link>
                             <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="text-white hover:text-golden">Contact</Link>
                             <Link

@@ -21,19 +21,61 @@ const contactFaqs = [
 
 export default function Contact() {
     const [formStatus, setFormStatus] = useState<"idle" | "sending" | "success">("idle");
+    const [formLoadTime] = useState<number>(Date.now());
+
+    const isLikelySpam = (name: string, email: string, phone: string, message: string): boolean => {
+        // Block random-character names (no vowels or too random)
+        const hasVowel = /[aeiouAEIOU]/.test(name);
+        if (!hasVowel && name.length > 4) return true;
+
+        // Block names that are just random uppercase/lowercase mix (like hWqDXOo...)
+        const randomCharPattern = /^[A-Za-z]{15,}$/.test(name) && !/\s/.test(name);
+        if (randomCharPattern && name.length > 12) return true;
+
+        // Block messages that are only numbers
+        if (/^["\s\d]+$/.test(message.trim())) return true;
+
+        // Block obviously fake emails
+        if (/\d{2,}\.[a-z]+\d/.test(email)) return true;
+
+        return false;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setFormStatus("sending");
+        const timeTaken = (Date.now() - formLoadTime) / 1000;
 
+        const formData = new FormData(e.target as HTMLFormElement);
+
+        // Honeypot check — bots fill hidden fields, humans don't
+        const honeypot = formData.get("website") as string;
+        if (honeypot && honeypot.trim() !== "") return;
+
+        // Time gate — bots submit instantly, humans take at least 3 seconds
+        if (timeTaken < 3) {
+            alert("Please take a moment to fill the form properly.");
+            return;
+        }
+
+        const name = (formData.get("name") as string).trim();
+        const email = (formData.get("email") as string).trim();
+        const phone = (formData.get("phone") as string).trim();
+        const message = (formData.get("message") as string).trim();
+
+        // Spam content check
+        if (isLikelySpam(name, email, phone, message)) {
+            alert("Invalid submission detected. Please fill the form correctly.");
+            return;
+        }
+
+        setFormStatus("sending");
         try {
-            const formData = new FormData(e.target as HTMLFormElement);
             const data = {
-                name: formData.get("name"),
-                email: formData.get("email"),
-                phone: formData.get("phone"),
+                name,
+                email,
+                phone,
                 service: formData.get("service"),
-                message: formData.get("message"),
+                message,
                 createdAt: serverTimestamp(),
                 date: new Date().toLocaleString(),
             };
@@ -84,6 +126,10 @@ export default function Contact() {
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit} className="space-y-6">
+                                    {/* Honeypot field — hidden from humans, bots fill it */}
+                                    <div style={{ display: 'none' }} aria-hidden="true">
+                                        <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+                                    </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-navy uppercase tracking-widest ml-1">Full Name</label>

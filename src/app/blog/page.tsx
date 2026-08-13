@@ -63,7 +63,7 @@ export default function Blog() {
             <section className="relative pt-40 pb-24 bg-navy overflow-hidden">
                 <div className="absolute inset-0 diagonal-lines opacity-10" />
                 <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
-                    <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter uppercase">MandemIT Intel</h1>
+                    <h1 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tighter uppercase">MandemIT Blog</h1>
                     <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10">
                         Expert Tips, Trends & Digital Marketing Insights to Fuel Your Growth.
                     </p>
@@ -81,15 +81,16 @@ export default function Blog() {
             </section>
 
             {/* Category Filter */}
-            <section className="py-12 px-6 bg-white border-b sticky top-20 z-20 shadow-sm overflow-x-auto whitespace-nowrap">
-                <div className="max-w-7xl mx-auto flex justify-center gap-4">
+            <section className="py-6 px-4 bg-white border-b sticky top-20 z-20 shadow-sm">
+                <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                     {categories.map((cat) => (
                         <button
                             key={cat}
                             onClick={() => setSelectedCategory(cat)}
-                            className={selectedCategory === cat
-                                ? "px-6 py-3 bg-golden text-navy font-black rounded-xl shadow-lg scale-105 transition-all"
-                                : "px-6 py-3 border-2 border-navy/5 text-navy font-bold rounded-xl hover:border-golden hover:text-golden transition-all"}
+                            className={`flex-shrink-0 px-4 py-2 text-sm font-black rounded-xl transition-all ${selectedCategory === cat
+                                    ? "bg-golden text-navy shadow-lg"
+                                    : "border-2 border-navy/10 text-navy hover:border-golden hover:text-golden"
+                                }`}
                         >
                             {cat}
                         </button>
@@ -107,9 +108,9 @@ export default function Blog() {
                             <button onClick={() => { setSearchQuery(""); setSelectedCategory("All"); }} className="mt-4 text-golden font-bold underline">Clear all filters</button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
                             {filteredPosts.map((post) => (
-                                <article key={post.slug} className="bg-white rounded-[32px] overflow-hidden shadow-xl hover:shadow-2xl transition-all border border-navy/5 group flex flex-col">
+                                <article key={post.slug} className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-navy/5 group flex flex-col">
                                     <div className="aspect-video bg-navy/5 relative overflow-hidden">
                                         {post.image ? (
                                             <img
@@ -125,20 +126,19 @@ export default function Blog() {
                                         <div className="absolute inset-0 bg-navy/20 group-hover:bg-navy/0 transition-colors" />
                                         <div className="absolute top-6 left-6 bg-golden text-navy px-4 py-1.5 rounded-lg font-black text-xs uppercase tracking-widest">{post.category}</div>
                                     </div>
-                                    <div className="p-8 flex-grow space-y-4 flex flex-col">
-                                        <h3 className="text-2xl font-black text-navy group-hover:text-golden transition-colors leading-tight line-clamp-2">
+                                    <div className="p-5 md:p-7 flex-grow space-y-3 flex flex-col">
+                                        <h3 className="text-lg md:text-xl font-black text-navy group-hover:text-golden transition-colors leading-tight line-clamp-2">
                                             <Link href={`/blog/${post.slug.split('/').filter(Boolean).pop()}`}>{post.title}</Link>
                                         </h3>
-                                        <p className="text-gray-600 line-clamp-2">{post.excerpt}</p>
-                                        <div className="mt-auto pt-6 flex items-center justify-between border-t border-navy/5 text-sm text-gray-400 font-medium">
-                                            <div className="flex items-center space-x-2"><Calendar className="w-4 h-4" /> <span>{post.date}</span></div>
-                                            <div className="flex items-center space-x-2"><Clock className="w-4 h-4" /> <span>{post.readTime}</span></div>
+                                        <p className="text-sm text-gray-600 line-clamp-2">{post.excerpt}</p>
+                                        <div className="mt-auto pt-4 flex items-center justify-between border-t border-navy/5 text-xs text-gray-400 font-medium">
+                                            <div className="flex items-center space-x-1"><Calendar className="w-3 h-3" /> <span>{post.date}</span></div>
+                                            <div className="flex items-center space-x-1"><Clock className="w-3 h-3" /> <span>{post.readTime}</span></div>
                                         </div>
-                                        <Link href={`/blog/${post.slug.split('/').filter(Boolean).pop()}`} className="text-navy font-black flex items-center group-hover:text-golden transition-colors pt-4">
+                                        <Link href={`/blog/${post.slug.split('/').filter(Boolean).pop()}`} className="text-navy font-black flex items-center group-hover:text-golden transition-colors text-sm">
                                             <span>Read More</span>
-                                            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" />
+                                            <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                                         </Link>
-
                                     </div>
                                 </article>
                             ))}

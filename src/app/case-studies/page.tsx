@@ -89,14 +89,14 @@ export default function CaseStudies() {
                             <button onClick={() => setSearchQuery("")} className="mt-4 text-golden font-bold underline">Reset search</button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-10">
                             {filteredStudies.map((cs, idx) => (
                                 <motion.article
                                     key={cs.slug}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.1 }}
-                                    className="group relative bg-white rounded-[40px] overflow-hidden shadow-xl border border-navy/5 flex flex-col"
+                                    className="group relative bg-white rounded-2xl md:rounded-[40px] overflow-hidden shadow-lg border border-navy/5 flex flex-col"
                                 >
                                     <div className="aspect-[16/10] overflow-hidden relative">
                                         <img
@@ -109,21 +109,21 @@ export default function CaseStudies() {
                                             {cs.category}
                                         </div>
                                     </div>
-                                    <div className="p-10 space-y-4 flex-grow">
-                                        <div className="flex items-center space-x-2 text-sm text-gray-400 font-bold mb-2">
-                                            <Calendar className="w-4 h-4" />
+                                    <div className="p-5 md:p-8 space-y-3 flex-grow">
+                                        <div className="flex items-center space-x-2 text-xs text-gray-400 font-bold mb-1">
+                                            <Calendar className="w-3 h-3" />
                                             <span>{cs.date}</span>
                                         </div>
-                                        <h3 className="text-3xl font-black text-navy group-hover:text-golden transition-colors leading-tight">
+                                        <h3 className="text-xl md:text-2xl font-black text-navy group-hover:text-golden transition-colors leading-tight">
                                             <Link href={`/case-studies/${cs.slug.split('/').filter(Boolean).pop()}`}>{cs.title}</Link>
                                         </h3>
-                                        <p className="text-lg text-gray-600 line-clamp-3">{cs.about}</p>
+                                        <p className="text-sm text-gray-600 line-clamp-3">{cs.about}</p>
                                         <Link
                                             href={`/case-studies/${cs.slug.split('/').filter(Boolean).pop()}`}
-                                            className="inline-flex items-center space-x-3 text-navy font-black pt-6 group/btn"
+                                            className="inline-flex items-center space-x-2 text-navy font-black pt-4 group/btn text-sm"
                                         >
-                                            <span className="border-b-4 border-golden">View Case Study</span>
-                                            <ArrowRight className="w-5 h-5 transition-transform group-hover/btn:translate-x-2" />
+                                            <span className="border-b-2 border-golden">View Case Study</span>
+                                            <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                                         </Link>
 
                                     </div>

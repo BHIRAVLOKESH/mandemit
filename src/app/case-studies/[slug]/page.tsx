@@ -1,7 +1,38 @@
+import type { Metadata } from "next";
 import { initialCaseStudies } from "@/lib/case-studies-data";
 import { db } from "@/lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import CaseStudyClient from "./CaseStudyClient";
+
+export async function generateMetadata(
+    { params }: { params: { slug: string } }
+): Promise<Metadata> {
+    const study = initialCaseStudies.find((s) => s.slug === params.slug);
+    if (!study) {
+        return { title: "Case Study | MandemIT" };
+    }
+    return {
+        title: `${study.title} | MandemIT Case Study`,
+        description: study.about,
+        alternates: { canonical: `https://mandemit.com/case-studies/${study.slug}` },
+        openGraph: {
+            title: `${study.title} | MandemIT`,
+            description: study.about,
+            url: `https://mandemit.com/case-studies/${study.slug}`,
+            siteName: "MandemIT",
+            images: [{ url: study.image || "/mandemit.png", width: 1200, height: 630, alt: study.title }],
+            type: "article",
+            locale: "en_IN",
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: `${study.title} | MandemIT`,
+            description: study.about,
+            images: [study.image || "/mandemit.png"],
+        },
+    };
+}
+
 
 // Add generateStaticParams for static export support
 export async function generateStaticParams() {

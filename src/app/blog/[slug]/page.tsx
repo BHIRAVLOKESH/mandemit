@@ -1,8 +1,38 @@
+import type { Metadata } from "next";
 import { initialPosts } from "@/lib/blog-data";
 import BlogClient from "./BlogClient";
 
 import { db } from "@/lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
+
+export async function generateMetadata(
+    { params }: { params: { slug: string } }
+): Promise<Metadata> {
+    const post = initialPosts.find((p) => p.slug === params.slug);
+    if (!post) {
+        return { title: "Blog Post | MandemIT" };
+    }
+    return {
+        title: post.title,
+        description: post.excerpt,
+        alternates: { canonical: `https://mandemit.com/blog/${post.slug}` },
+        openGraph: {
+            title: post.title,
+            description: post.excerpt,
+            url: `https://mandemit.com/blog/${post.slug}`,
+            siteName: "MandemIT",
+            images: [{ url: post.image || "/mandemit.png", width: 1200, height: 630, alt: post.title }],
+            type: "article",
+            locale: "en_IN",
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: post.title,
+            description: post.excerpt,
+            images: [post.image || "/mandemit.png"],
+        },
+    };
+}
 
 // Add generateStaticParams for static export support
 export async function generateStaticParams() {

@@ -14,6 +14,40 @@ import Link from "next/link";
 export const metadata = {
   title: "No. 1 Digital Marketing Agency in Andhra Pradesh | MandemIT",
   description: "MandemIT is the No. 1 digital marketing agency in Andhra Pradesh, specializing in SEO, Social Media Ads, Web Development, and Lead Generation. Boost your ROI today!",
+  alternates: { canonical: "https://mandemit.com" },
+  openGraph: {
+    title: "No. 1 Digital Marketing Agency in Andhra Pradesh | MandemIT",
+    description: "MandemIT is the No. 1 digital marketing agency in Andhra Pradesh — SEO, Google Ads, Social Media, Lead Generation, Web Development. 500+ brands powered.",
+    url: "https://mandemit.com",
+    siteName: "MandemIT",
+    images: [{ url: "/mandemit.png", width: 1200, height: 630, alt: "MandemIT Digital Marketing Agency" }],
+    type: "website",
+    locale: "en_IN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "No. 1 Digital Marketing Agency in Andhra Pradesh | MandemIT",
+    description: "Expert SEO, Google Ads, Social Media & Web Dev from Visakhapatnam. 500+ brands. 10+ years.",
+    images: ["/mandemit.png"],
+  },
+  keywords: [
+    "best digital marketing agency in Vizag",
+    "best digital marketing company in Vizag",
+    "best digital marketing agency in Visakhapatnam",
+    "best digital marketing company in Visakhapatnam",
+    "digital marketing agency in Vizag",
+    "digital marketing company in Vizag",
+    "digital marketing agency in Visakhapatnam",
+    "digital marketing company in Visakhapatnam",
+    "best digital marketing services in Vizag",
+    "best digital marketing services in Visakhapatnam",
+    "digital marketing services in Vizag",
+    "digital marketing services in Visakhapatnam",
+    "best online marketing agency in Vizag",
+    "best digital marketing experts in Vizag",
+    "best digital marketing experts in Visakhapatnam",
+    "MandemIT",
+  ],
 };
 
 const jsonLd = {

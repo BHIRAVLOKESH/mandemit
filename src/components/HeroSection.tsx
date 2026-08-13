@@ -101,7 +101,7 @@ export default function HeroSection() {
                     className="relative hidden lg:block"
                 >
                     <div className="relative w-full aspect-square">
-                        <div className="w-full h-full rounded-[60px] overflow-hidden border-4 border-golden/30 shadow-2xl">
+                        <div className="relative w-full h-full rounded-[60px] overflow-hidden border-4 border-golden/30 shadow-2xl">
                             <Image
                                 src="/images/mandemit_office_team.png"
                                 alt="MandemIT Office Team"

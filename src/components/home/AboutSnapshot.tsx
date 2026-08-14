@@ -8,18 +8,15 @@ export default function AboutSnapshot() {
     return (
         <section className="py-24 px-6 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div className="relative pb-16">
-                    <div
-                        className="aspect-[4/3] md:aspect-square lg:aspect-[4/3] bg-navy rounded-[40px] md:rounded-[60px] overflow-hidden relative group shadow-2xl"
-                        style={{ WebkitBoxReflect: "below 4px linear-gradient(to bottom, transparent 60%, rgba(255,255,255,0.4))" }}
-                    >
+                <div className="relative">
+                    <div className="aspect-[4/3] bg-navy rounded-[40px] md:rounded-[60px] overflow-hidden relative group shadow-2xl">
                         <Image
                             src="/images/mandemit-ceo.jpeg"
                             alt="MandemIT CEO"
                             fill
-                            className="object-cover object-top group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                            className="object-cover object-top group-hover:scale-110 transition-transform duration-700 opacity-95 group-hover:opacity-100"
                         />
-                        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-navy/80 via-transparent to-transparent opacity-80" />
+                        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-navy/60 to-transparent opacity-90" />
                         <div className="absolute bottom-6 left-6 bg-golden text-navy p-5 rounded-[24px] shadow-2xl transform -rotate-2 group-hover:rotate-0 transition-transform">
                             <span className="text-3xl font-black block leading-none">10+</span>
                             <span className="text-xs font-bold uppercase tracking-wider">Years of Excellence</span>

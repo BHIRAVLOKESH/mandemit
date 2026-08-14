@@ -11,8 +11,8 @@ export default function AboutSnapshot() {
                 <div className="relative">
                     <div className="aspect-square bg-navy rounded-[60px] overflow-hidden relative group shadow-2xl">
                         <Image
-                            src="/images/mandemit_office_team.png"
-                            alt="MandemIT Office Team"
+                            src="/images/mandemit-ceo.jpeg"
+                            alt="MandemIT CEO"
                             fill
                             className="object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100"
                         />

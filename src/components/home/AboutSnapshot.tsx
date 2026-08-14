@@ -9,12 +9,13 @@ export default function AboutSnapshot() {
         <section className="py-24 px-6 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div className="relative">
-                    <div className="aspect-[4/3] bg-navy rounded-[40px] md:rounded-[60px] overflow-hidden relative group shadow-2xl">
+                    <div className="bg-navy rounded-[40px] md:rounded-[60px] overflow-hidden relative group shadow-2xl">
                         <Image
                             src="/images/mandemit-ceo.jpeg"
                             alt="MandemIT CEO"
-                            fill
-                            className="object-cover object-top group-hover:scale-110 transition-transform duration-700 opacity-95 group-hover:opacity-100"
+                            width={1200}
+                            height={800}
+                            className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700 opacity-95 group-hover:opacity-100"
                         />
                         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-navy/60 to-transparent opacity-90" />
                         <div className="absolute bottom-6 left-6 bg-golden text-navy p-5 rounded-[24px] shadow-2xl transform -rotate-2 group-hover:rotate-0 transition-transform">
